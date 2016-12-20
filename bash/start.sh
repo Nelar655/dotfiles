@@ -2,39 +2,51 @@
 
 case $1 in
 "cinema")
-	dirnam="/home/aonis/cinema/garrysmod/"
-	gamemode="cinema"
-	map="teamvoc_nexmultiplex3"
-	maxplayers=64
-	port=27016
+        dirnam="$HOME/cinema/garrysmod"
+        gamemode="cinema"
+        map="teamvoc_nexmultiplex3"
+        maxplayers=64
+        port=27016
 ;;
 "deathrun")
-	dirnam="/home/aonis/obj/garrysmod/"
-	gamemode="deathrun"
-	map="deathrun_iceworld_v4"
-	maxplayers=48
-	port=27017
+        dirnam="$HOME/obj/garrysmod"
+        gamemode="deathrun"
+        map="deathrun_iceworld_v4"
+        maxplayers=48
+        port=27017
 ;;
 "dev")
-	dirnam="/home/aonis/beta/garrysmod/"
-	gamemode="cinema"
-	map="teamvoc_nexmultiplex3"
-	maxplayers=2
-	port=27025
+        dirnam="$HOME/beta/garrysmod"
+        gamemode="cinema"
+        map="teamvoc_nexmultiplex3"
+        maxplayers=32
+        port=27025
 ;;
 *)
-	echo "ERROR! Incorrect Gamemode!"
+        echo "ERROR! Incorrect Gamemode!"
 esac
 
 if [ -z $1 ]; then
-	echo "To start server write 's <gamemode>'"
-	echo "Gamemodes list: cinema, deathrun, dev"
+        echo "To start server write 's <gamemode>'"
+        echo "Gamemodes list: cinema, deathrun, dev"
+        echo "To update server write 's <gamemode> update'"
 else
-
-	echo "Starting $1..."
-	sleep 1
-	cd $dirnam
-	screen -A -h 2000 -m -d -S $1 ./srcds_run -game garrysmod +gamemode $gamemode +map $map +maxplayers $maxplayers +port $port +exec "server.cfg" -debug -disableluarefresh
-	sleep 1
-	screen -x $1
+        if [ -z $2 ]; then
+                echo "Starting $1..."
+                sleep 1
+                cd $dirnam
+                screen -A -h 2000 -m -d -S $1 ./srcds_run -game garrysmod +gamemode $gamemode +map $map +maxplayers $maxplayers +port $port +exec "server.cfg" -debug -disableluarefresh
+                sleep 1
+                screen -x $1
+        else
+                case $2 in
+                "update")
+                        echo "Checking updates for $1 server..."
+                        ./bin/steamcmd.sh +login anonymous +force_install_dir $dirnam +app_update 4020 validate +quit
+                ;;
+                *)
+                        echo "ERROR! Incorrect attribute!"
+                        echo "To update server write 's <gamemode> update'"
+                esac
+        fi
 fi
